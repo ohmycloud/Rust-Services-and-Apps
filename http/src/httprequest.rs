@@ -47,6 +47,12 @@ impl From<&str> for Version {
     }
 }
 
+impl From<&str> for HttpRequest {
+    fn from(s: &str) -> Self {
+        todo!()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
