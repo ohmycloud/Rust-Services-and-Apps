@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 #[derive(Debug, PartialEq)]
 pub enum Method {
     Get,
@@ -10,6 +12,20 @@ pub enum Version {
     V1_1,
     V2_0,
     Uninitialized,
+}
+
+#[derive(Debug, PartialEq)]
+pub enum Resource {
+    Path(String),
+}
+
+#[derive(Debug)]
+pub struct HttpRequest {
+    pub method: Method,
+    pub version: Version,
+    pub resource: Resource,
+    pub headers: HashMap<String, String>,
+    pub msg_body: String,
 }
 
 impl From<&str> for Method {
