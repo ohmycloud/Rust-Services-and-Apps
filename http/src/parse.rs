@@ -64,7 +64,6 @@ fn parse_headers<'a>(input: &mut &'a str) -> PResult<Vec<Header<'a>>> {
 }
 
 fn parse_body<'a>(input: &mut &'a str) -> PResult<Option<&'a str>> {
-    println!("{:?}", input);
     let body = preceded(multispace1, till_line_ending).map(|x: &str| x.trim());
     opt(body).parse_next(input)
 }
