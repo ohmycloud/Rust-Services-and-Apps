@@ -1,4 +1,4 @@
-use winnow::ascii::{alpha1, space0, space1, till_line_ending};
+use winnow::ascii::{alpha1, multispace1, newline, space0, space1, till_line_ending};
 use winnow::combinator::{opt, preceded, repeat, seq};
 use winnow::token::take_until;
 use winnow::{PResult, Parser};
@@ -28,11 +28,11 @@ fn parse_method<'a>(input: &mut &'a str) -> PResult<&'a str> {
 }
 
 fn parse_path<'a>(input: &mut &'a str) -> PResult<&'a str> {
-    preceded(space1, take_until(1, " ")).parse_next(input)
+    preceded(space1, take_until(1.., " ")).parse_next(input)
 }
 
 fn parse_version<'a>(input: &mut &'a str) -> PResult<&'a str> {
-    preceded(space1, take_until(1, "\r\n")).parse_next(input)
+    preceded(space1, take_until(1.., "\r\n")).parse_next(input)
 }
 
 fn parse_request_line<'a>(input: &mut &'a str) -> PResult<RequestLine<'a>> {
@@ -64,7 +64,8 @@ fn parse_headers<'a>(input: &mut &'a str) -> PResult<Vec<Header<'a>>> {
 }
 
 fn parse_body<'a>(input: &mut &'a str) -> PResult<Option<&'a str>> {
-    let body = preceded(space0, till_line_ending).map(|x: &str| x.trim());
+    println!("{:?}", input);
+    let body = preceded(multispace1, till_line_ending).map(|x: &str| x.trim());
     opt(body).parse_next(input)
 }
 
