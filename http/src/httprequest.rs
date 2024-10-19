@@ -1,3 +1,5 @@
+use crate::parse::parse_http_request;
+use crate::parse::HttpRequest as HttpReq;
 use std::collections::HashMap;
 
 #[derive(Debug, PartialEq)]
@@ -47,9 +49,20 @@ impl From<&str> for Version {
     }
 }
 
-impl From<&str> for HttpRequest {
-    fn from(s: &str) -> Self {
-        todo!()
+impl From<String> for HttpRequest {
+    fn from(s: String) -> Self {
+        let mut s = &s;
+        let request: HttpReq = parse_http_request(&mut &***&mut s).unwrap();
+
+        Self {
+            method: request.request_line.method.into(),
+            version: request.request_line.version.into(),
+            resource: Resource::Path(request.request_line.path.into()),
+            headers: request.headers.iter().map(|x| {
+                (x.key.to_string(), x.value.to_string())
+            }).collect(),
+            msg_body: request.body.unwrap().to_string(),
+        }
     }
 }
 
@@ -67,5 +80,21 @@ mod tests {
     fn test_version_into() {
         let m: Version = "HTTP/1.1".into();
         assert_eq!(m, Version::V1_1);
+    }
+
+    fn test_read_http() {
+        let s = String::from("GET /greeting HTTP/1.1\r\nHost:
+          localhost:3000\r\nUser-Agent: curl/7.64.1\r\nAccept:
+          */*\r\n\r\n");
+        let req: HttpRequest =  s.into();
+        assert_eq!(req.method, Method::Get);
+        assert_eq!(req.version, Version::V1_1);
+        assert_eq!(req.resource, Resource::Path("/greeting".to_string()));
+
+        let mut headers = HashMap::new();
+        headers.insert("Host".into(), "localhost:3000".into());
+        headers.insert("Accept".into(), "*/*".into());
+        headers.insert("User-Agent".into(), "curl/7/64/1".into());
+        assert_eq!(req.headers, headers);
     }
 }

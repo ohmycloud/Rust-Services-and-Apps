@@ -1,26 +1,26 @@
-use winnow::ascii::{alpha1, multispace1, newline, space0, space1, till_line_ending};
+use winnow::ascii::{alpha1, multispace1, space0, space1, till_line_ending};
 use winnow::combinator::{opt, preceded, repeat, seq};
 use winnow::token::take_until;
 use winnow::{PResult, Parser};
 
 #[derive(Debug, PartialEq)]
 pub struct HttpRequest<'a> {
-    request_line: RequestLine<'a>,
-    headers: Vec<Header<'a>>,
-    body: Option<&'a str>,
+    pub request_line: RequestLine<'a>,
+    pub headers: Vec<Header<'a>>,
+    pub body: Option<&'a str>,
 }
 
 #[derive(Debug, PartialEq)]
 pub struct RequestLine<'a> {
-    method: &'a str,
-    path: &'a str,
-    version: &'a str,
+    pub method: &'a str,
+    pub path: &'a str,
+    pub version: &'a str,
 }
 
 #[derive(Debug, PartialEq)]
 pub struct Header<'a> {
-    key: &'a str,
-    value: &'a str,
+    pub key: &'a str,
+    pub value: &'a str,
 }
 
 fn parse_method<'a>(input: &mut &'a str) -> PResult<&'a str> {
